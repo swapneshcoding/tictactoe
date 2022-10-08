@@ -2,29 +2,65 @@ import "./styles.css";
 import { useState } from "react";
 
 function Square(props) {
-  return <button className="square">{props.id}</button>;
+  return (
+    <button className="square" onClick={props.onClick}>
+      {props.value}
+    </button>
+  );
 }
 
 export default function App() {
-  const { state, setState } = useState({
+  const [state, setState] = useState({
     squares: Array(9).fill(null),
-    xIsNext: true,
+    xIsNext: true
   });
+
+  function renderSquare(i) {
+    return (
+      <Square id={i} value={state.squares[i]} onClick={() => handleClick(i)} />
+    );
+  }
+  function handleClick(i) {
+    // console.log(`button ${i} is clicked`);
+    const squares = state.squares;
+    if (calculateWinner(squares) || squares[i]) return;
+    squares[i] = state.xIsNext ? "X" : "O";
+    setState({ squares: squares, xIsNext: !state.xIsNext });
+  }
+
+  const winner = calculateWinner(state.squares);
+  let status;
+  if (winner) status = "Winner: " + winner;
+  else status = `${state.xIsNext ? "X" : "O"} is next`;
 
   return (
     <>
-      <h2>{/*state.xIsNext ? 'X' : 'O'*/} is next</h2>
+      <h2>{status}</h2>
       <div className="App">
-        <Square id="1" />
-        <Square id="2" />
-        <Square id="3" />
-        <Square id="4" />
-        <Square id="5" />
-        <Square id="6" />
-        <Square id="7" />
-        <Square id="8" />
-        <Square id="9" />
+        {renderSquare(0)} {renderSquare(1)} {renderSquare(2)}
+        {renderSquare(3)} {renderSquare(4)} {renderSquare(5)}
+        {renderSquare(6)} {renderSquare(7)} {renderSquare(8)}
       </div>
     </>
   );
+}
+
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
 }
