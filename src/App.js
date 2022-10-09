@@ -28,9 +28,17 @@ export default function App() {
     setState({ squares: squares, xIsNext: !state.xIsNext });
   }
 
+  function newGame() {
+    setState({
+      squares: Array(9).fill(null),
+      xIsNext: true
+    });
+  }
+
   const winner = calculateWinner(state.squares);
   let status;
-  if (winner) status = "Winner: " + winner;
+  if (winner === "Draw") status = "Draw";
+  else if (winner) status = "Winner: " + winner;
   else status = `${state.xIsNext ? "X" : "O"} is next`;
 
   return (
@@ -40,6 +48,11 @@ export default function App() {
         {renderSquare(0)} {renderSquare(1)} {renderSquare(2)}
         {renderSquare(3)} {renderSquare(4)} {renderSquare(5)}
         {renderSquare(6)} {renderSquare(7)} {renderSquare(8)}
+      </div>
+      <div>
+        <button style={{ marginTop: "2%" }} onClick={newGame}>
+          new Game
+        </button>
       </div>
     </>
   );
@@ -62,5 +75,13 @@ function calculateWinner(squares) {
       return squares[a];
     }
   }
+  let isDraw = true;
+  for (let x of squares) {
+    if (x == null) {
+      isDraw = false;
+      break;
+    }
+  }
+  if (isDraw) return "Draw";
   return null;
 }
